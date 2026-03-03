@@ -7,6 +7,7 @@ const CONFIG_KEY = 'faah-error-alert';
 
 let lastTriggerAt = 0;
 let lastErrorCount = 0;
+let isPlaying = false;
 let extensionPath = '';
 let output: vscode.OutputChannel;
 
@@ -49,21 +50,43 @@ export function activate(context: vscode.ExtensionContext): void {
 // ================= CORE LOGIC =================
 
 async function triggerAlert(reason: string): Promise<void> {
+
+    // Prevent double playing
+    if (isPlaying) {
+        log('Blocked: already playing');
+        return;
+    }
+
     const now = Date.now();
     const cooldownMs = config().get<number>('cooldownMs', 2500);
 
-    if (now - lastTriggerAt < cooldownMs) return;
+    // Cooldown protection
+    if (now - lastTriggerAt < cooldownMs) {
+        log('Blocked: cooldown active');
+        return;
+    }
+
     lastTriggerAt = now;
+    isPlaying = true;
 
     log(`Triggered: ${reason}`);
 
-    const played = await playConfiguredSound();
+    try {
+        const played = await playConfiguredSound();
 
-    // Fallback to speech if audio fails
-    if (!played) {
-        const phrase = config().get<string>('customPhrase', 'Error detected');
-        await speak(phrase);
+        if (!played) {
+            const phrase = config().get<string>('customPhrase', 'Error detected');
+            await speak(phrase);
+        }
+
+    } catch (err) {
+        log(`Playback error: ${err}`);
     }
+
+    // Unlock after short delay
+    setTimeout(() => {
+        isPlaying = false;
+    }, 700);
 }
 
 // ================= AUDIO + SPEECH =================
