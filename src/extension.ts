@@ -6,29 +6,48 @@ import { spawn } from 'child_process';
 const CONFIG_KEY = 'faah-error-alert';
 
 let lastTriggerAt = 0;
-let lastErrorCount = 0;
 let isPlaying = false;
+let diagnosticTimer: NodeJS.Timeout | undefined;
+let hadErrorPreviously = false;
 let extensionPath = '';
 let output: vscode.OutputChannel;
 
 export function activate(context: vscode.ExtensionContext): void {
+
     output = vscode.window.createOutputChannel('Faah Error Alert');
     extensionPath = context.extensionPath;
-    lastErrorCount = countTotalErrors();
 
-    // 1️⃣ Listen for editor errors
+    // Capture initial error state
+    hadErrorPreviously = hasAnyError();
+
+    // ================= EDITOR ERROR LISTENER (BATCH + STATE SAFE) =================
+
     const diagnosticListener = vscode.languages.onDidChangeDiagnostics(() => {
+
         if (!config().get<boolean>('onErrors', true)) return;
 
-        const currentErrors = countTotalErrors();
-        if (currentErrors > lastErrorCount) {
-            triggerAlert('New Editor Error');
+        if (diagnosticTimer) {
+            clearTimeout(diagnosticTimer);
         }
-        lastErrorCount = currentErrors;
+
+        diagnosticTimer = setTimeout(() => {
+
+            const hasErrorNow = hasAnyError();
+
+            // Trigger ONLY when transitioning from no-error → error
+            if (!hadErrorPreviously && hasErrorNow) {
+                triggerAlert('Editor Error');
+            }
+
+            hadErrorPreviously = hasErrorNow;
+
+        }, 300);
     });
 
-    // 2️⃣ Listen for terminal failures
+    // ================= TERMINAL FAILURE LISTENER =================
+
     const terminalListener = vscode.window.onDidEndTerminalShellExecution(async (e) => {
+
         const enabled = config().get<boolean>('onTerminalError', true);
         if (!enabled) return;
 
@@ -38,33 +57,31 @@ export function activate(context: vscode.ExtensionContext): void {
         }
     });
 
-    // 3️⃣ Manual Command
+    // ================= MANUAL COMMAND =================
+
     const playNow = vscode.commands.registerCommand(
         'faah-error-alert.playNow',
         () => triggerAlert('Manual Trigger')
     );
 
-    context.subscriptions.push(output, diagnosticListener, terminalListener, playNow);
+    context.subscriptions.push(
+        output,
+        diagnosticListener,
+        terminalListener,
+        playNow
+    );
 }
 
 // ================= CORE LOGIC =================
 
 async function triggerAlert(reason: string): Promise<void> {
 
-    // Prevent double playing
-    if (isPlaying) {
-        log('Blocked: already playing');
-        return;
-    }
+    if (isPlaying) return;
 
     const now = Date.now();
     const cooldownMs = config().get<number>('cooldownMs', 2500);
 
-    // Cooldown protection
-    if (now - lastTriggerAt < cooldownMs) {
-        log('Blocked: cooldown active');
-        return;
-    }
+    if (now - lastTriggerAt < cooldownMs) return;
 
     lastTriggerAt = now;
     isPlaying = true;
@@ -83,37 +100,24 @@ async function triggerAlert(reason: string): Promise<void> {
         log(`Playback error: ${err}`);
     }
 
-    // Unlock after short delay
     setTimeout(() => {
         isPlaying = false;
     }, 700);
 }
 
-// ================= AUDIO + SPEECH =================
+// ================= ERROR CHECK =================
 
-function speak(text: string): Promise<void> {
-    return new Promise((resolve) => {
-        const escaped = text.replace(/'/g, "''");
-
-        const candidates =
-            process.platform === 'darwin'
-                ? [{ cmd: 'say', args: [text] }]
-                : process.platform === 'win32'
-                ? [{
-                    cmd: 'powershell',
-                    args: [
-                        '-NoProfile',
-                        '-Command',
-                        `Add-Type -AssemblyName System.Speech; (New-Object System.Speech.Synthesis.SpeechSynthesizer).Speak('${escaped}')`
-                    ]
-                }]
-                : [{ cmd: 'spd-say', args: [text] }];
-
-        runCandidate(candidates, 0, () => resolve());
-    });
+function hasAnyError(): boolean {
+    return vscode.languages
+        .getDiagnostics()
+        .flatMap(([_, d]) => d)
+        .some(d => d.severity === vscode.DiagnosticSeverity.Error);
 }
 
+// ================= AUDIO PLAYBACK =================
+
 function playConfiguredSound(): Promise<boolean> {
+
     const filePath = path.join(extensionPath, 'audio.wav');
 
     if (!fs.existsSync(filePath)) {
@@ -128,6 +132,7 @@ function playConfiguredSound(): Promise<boolean> {
 }
 
 function audioCandidates(filePath: string) {
+
     if (process.platform === 'darwin') {
         return [{ cmd: 'afplay', args: [filePath] }];
     }
@@ -149,11 +154,36 @@ function audioCandidates(filePath: string) {
     }];
 }
 
+function speak(text: string): Promise<void> {
+
+    return new Promise((resolve) => {
+
+        const escaped = text.replace(/'/g, "''");
+
+        const candidates =
+            process.platform === 'darwin'
+                ? [{ cmd: 'say', args: [text] }]
+                : process.platform === 'win32'
+                ? [{
+                    cmd: 'powershell',
+                    args: [
+                        '-NoProfile',
+                        '-Command',
+                        `Add-Type -AssemblyName System.Speech; (New-Object System.Speech.Synthesis.SpeechSynthesizer).Speak('${escaped}')`
+                    ]
+                }]
+                : [{ cmd: 'spd-say', args: [text] }];
+
+        runCandidate(candidates, 0, () => resolve());
+    });
+}
+
 function runCandidate(
     candidates: any[],
     index: number,
     done: (success: boolean) => void
 ): void {
+
     if (index >= candidates.length) return done(false);
 
     const child = spawn(
@@ -174,19 +204,6 @@ function runCandidate(
 }
 
 // ================= HELPERS =================
-
-function countTotalErrors(): number {
-    return vscode.languages
-        .getDiagnostics()
-        .reduce(
-            (count, [, diagnostics]) =>
-                count +
-                diagnostics.filter(
-                    d => d.severity === vscode.DiagnosticSeverity.Error
-                ).length,
-            0
-        );
-}
 
 function config() {
     return vscode.workspace.getConfiguration(CONFIG_KEY);
