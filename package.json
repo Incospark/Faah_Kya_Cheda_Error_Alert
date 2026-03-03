@@ -1,32 +1,32 @@
 {
-  "name": "kya-cheda-sound",
-  "displayName": "kya cheda Sound",
-  "description": "Play Kya cheda bsdk when tests fail or errors appear.",
-  "version": "1.0.0",
+  "name": "faah-error-alert",
+  "displayName": "Faah Error Alert",
+  "description": "A VS Code extension that plays a custom alert sound when code errors or terminal failures occur.",
+  "version": "1.0.1",
   "publisher": "Incospark",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Utkarshrajmishra/kya-cheda-bsdk-extension"
+    "url": "https://github.com/Incospark/Faah_Kya_Cheda_Error_Alert"
   },
-  "homepage": "https://github.com/Utkarshrajmishra/kya-cheda-bsdk-extension#readme",
+  "homepage": "https://github.com/Incospark/Faah_Kya_Cheda_Error_Alert",
   "bugs": {
-    "url": "https://github.com/Utkarshrajmishra/kya-cheda-bsdk-extension/issues"
+    "url": "https://github.com/Incospark/Faah_Kya_Cheda_Error_Alert/issues"
   },
   "keywords": [
-    "sound",
-    "audio",
-    "testing",
-    "error",
-    "notification",
-    "fun"
+    "error sound",
+    "alert sound",
+    "debugging tool",
+    "developer productivity",
+    "terminal error alert",
+    "vscode extension",
+    "code error notification"
   ],
   "engines": {
     "vscode": "^1.85.0"
   },
   "categories": [
-    "Other",
-    "Testing"
+    "Other"
   ],
   "icon": "logo.ico",
   "activationEvents": [
@@ -46,57 +46,57 @@
   "contributes": {
     "commands": [
       {
-        "command": "kya-cheda-bsdk-Sound.playNow",
-        "title": "Kya cheda bsdk Sound: Play Now"
+        "command": "faah-error-alert.playNow",
+        "title": "Faah Error Alert: Play Now"
       },
       {
-        "command": "kya-cheda-bsdk-Sound.selfTest",
-        "title": "Kya cheda bsdk Sound: Self Test"
+        "command": "faah-error-alert.selfTest",
+        "title": "Faah Error Alert: Self Test"
       },
       {
-        "command": "kya-cheda-bsdk-Sound.showLogs",
-        "title": "Kya cheda bsdk Sound: Show Logs"
+        "command": "faah-error-alert.showLogs",
+        "title": "Faah Error Alert: Show Logs"
       }
     ],
     "configuration": {
       "type": "object",
-      "title": "Kya cheda bsdk Sound",
+      "title": "Faah Error Alert",
       "properties": {
-        "kya-cheda-bsdk-Sound.enabled": {
+        "faah-error-alert.enabled": {
           "type": "boolean",
           "default": true,
-          "description": "Enable all Kya cheda bsdk  Sound notifications."
+          "description": "Enable or disable error alert notifications."
         },
-        "kya-cheda-bsdk-Sound.onTestFailure": {
+        "faah-error-alert.onTestFailure": {
           "type": "boolean",
           "default": true,
-          "description": "Play when a test run reports failing tests."
+          "description": "Play sound when a test run reports failing tests."
         },
-        "kya-cheda-bsdk-Sound.onErrors": {
+        "faah-error-alert.onErrors": {
           "type": "boolean",
           "default": true,
-          "description": "Play when new diagnostics with Error severity are detected."
+          "description": "Play sound when new editor errors are detected."
         },
-        "kya-cheda-bsdk-Sound.readErrorMessage": {
+        "faah-error-alert.readErrorMessage": {
           "type": "boolean",
           "default": true,
-          "description": "Read the latest error message before the final Kya cheda bsdk."
+          "description": "Read the latest error message before playing the alert sound."
         },
-        "kya-cheda-bsdk-Sound.soundFilePath": {
+        "faah-error-alert.soundFilePath": {
           "type": "string",
           "default": "${extensionPath}/audio.wav",
-          "description": "Path to audio file to play. Supports ${extensionPath} and ${workspaceFolder}."
+          "description": "Path to the audio file to play. Supports ${extensionPath} and ${workspaceFolder}."
         },
-        "kya-cheda-bsdk-Sound.cooldownMs": {
+        "faah-error-alert.cooldownMs": {
           "type": "number",
           "default": 2500,
           "minimum": 0,
-          "description": "Minimum delay between repeated sounds, in milliseconds."
+          "description": "Minimum delay between repeated sounds (in milliseconds)."
         },
-        "kya-cheda-bsdk-Sound.customPhrase": {
+        "faah-error-alert.customPhrase": {
           "type": "string",
-          "default": "Kya cheda bsdk",
-          "description": "Phrase spoken only if audio file playback fails."
+          "default": "Error detected",
+          "description": "Phrase spoken only if audio playback fails."
         }
       }
     }
