@@ -1,0 +1,116 @@
+{
+  "name": "kya-cheda-sound",
+  "displayName": "kya cheda Sound",
+  "description": "Play Kya cheda bsdk when tests fail or errors appear.",
+  "version": "1.0.0",
+  "publisher": "Incospark",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Utkarshrajmishra/kya-cheda-bsdk-extension"
+  },
+  "homepage": "https://github.com/Utkarshrajmishra/kya-cheda-bsdk-extension#readme",
+  "bugs": {
+    "url": "https://github.com/Utkarshrajmishra/kya-cheda-bsdk-extension/issues"
+  },
+  "keywords": [
+    "sound",
+    "audio",
+    "testing",
+    "error",
+    "notification",
+    "fun"
+  ],
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other",
+    "Testing"
+  ],
+  "icon": "logo.ico",
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "files": [
+    "out/**",
+    "src/**",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE",
+    "package.json",
+    "audio.wav",
+    "logo.ico"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "kya-cheda-bsdk-Sound.playNow",
+        "title": "Kya cheda bsdk Sound: Play Now"
+      },
+      {
+        "command": "kya-cheda-bsdk-Sound.selfTest",
+        "title": "Kya cheda bsdk Sound: Self Test"
+      },
+      {
+        "command": "kya-cheda-bsdk-Sound.showLogs",
+        "title": "Kya cheda bsdk Sound: Show Logs"
+      }
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "Kya cheda bsdk Sound",
+      "properties": {
+        "kya-cheda-bsdk-Sound.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable all Kya cheda bsdk  Sound notifications."
+        },
+        "kya-cheda-bsdk-Sound.onTestFailure": {
+          "type": "boolean",
+          "default": true,
+          "description": "Play when a test run reports failing tests."
+        },
+        "kya-cheda-bsdk-Sound.onErrors": {
+          "type": "boolean",
+          "default": true,
+          "description": "Play when new diagnostics with Error severity are detected."
+        },
+        "kya-cheda-bsdk-Sound.readErrorMessage": {
+          "type": "boolean",
+          "default": true,
+          "description": "Read the latest error message before the final Kya cheda bsdk."
+        },
+        "kya-cheda-bsdk-Sound.soundFilePath": {
+          "type": "string",
+          "default": "${extensionPath}/audio.wav",
+          "description": "Path to audio file to play. Supports ${extensionPath} and ${workspaceFolder}."
+        },
+        "kya-cheda-bsdk-Sound.cooldownMs": {
+          "type": "number",
+          "default": 2500,
+          "minimum": 0,
+          "description": "Minimum delay between repeated sounds, in milliseconds."
+        },
+        "kya-cheda-bsdk-Sound.customPhrase": {
+          "type": "string",
+          "default": "Kya cheda bsdk",
+          "description": "Phrase spoken only if audio file playback fails."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "test": "node --test test/error.test.js"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.7",
+    "@types/vscode": "^1.85.0",
+    "@vscode/vsce": "^3.7.1",
+    "typescript": "^5.5.4"
+  }
+}
