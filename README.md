@@ -59,7 +59,7 @@ Open the Command Palette (`Ctrl+Shift+P`) and search for:
 
 ## 🤝 Contributing
 
-Found a bug or want to add more features? Feel free to check out the [GitHub Repository](https://github.com/Utkarshrajmishra).
+Found a bug or want to add more features? Feel free to check out the [GitHub Repository](https://github.com/Incospark).
 
 ---
 **Enjoying the motivation? Leave a ⭐ on the Marketplace!**
