@@ -45,7 +45,7 @@ Customize the behavior in `Settings > Extensions > Kya cheda bsdk Sound`:
 
 Open the Command Palette (`Ctrl+Shift+P`) and search for:
 
-- `Kya cheda bsdk Sound: Play Now` - Test the sound immediately.
+- `Faah & Kya cheda bsdk Sound: Play Now` - Test the sound immediately.
 
 ---
 
