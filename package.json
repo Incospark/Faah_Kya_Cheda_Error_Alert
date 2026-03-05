@@ -4,7 +4,7 @@
   "description": "A VS Code extension that plays a custom alert sound when code errors or terminal failures occur.",
   "version": "1.0.12",
   "publisher": "Incospark",
-  "license": "MIT",
+  "license": "MIT", 
   "repository": {
     "type": "git",
     "url": "https://github.com/Incospark/Faah_Kya_Cheda_Error_Alert"

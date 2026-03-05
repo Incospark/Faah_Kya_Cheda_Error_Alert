@@ -2,7 +2,7 @@
 
 **"Kya cheda  "** — The only motivation you'll ever need.
 
-Tired of silently failing? This extension ensures that every time you make a coding mistake or a terminal command fails, you hear about it. Literally.
+Tired of silently failing? This extension ensures that every time you make a coding mistake or a terminal command fails, you hear about it. Literally. 
 
 ---
 
