@@ -2,7 +2,7 @@
   "name": "faah-error-alert",
   "displayName": "Faah Error Alert",
   "description": "A VS Code extension that plays a custom alert sound when code errors or terminal failures occur.",
-  "version": "1.0.1",
+  "version": "1.0.12",
   "publisher": "Incospark",
   "license": "MIT",
   "repository": {
